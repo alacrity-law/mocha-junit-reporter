@@ -1,11 +1,12 @@
 {
-  "name": "mocha-junit-reporter",
-  "version": "2.0.0",
+  "name": "@alacrity/mocha-junit-reporter",
+  "version": "2.0.1",
   "description": "A JUnit reporter for mocha.",
   "main": "index.js",
   "scripts": {
     "ci": "npm run lint && npm run test",
     "lint": "./node_modules/.bin/eslint '*.js' 'test/**/*.js'",
+    "release": "release-it",
     "test": "MOCHA_FILE=test/mocha.xml node_modules/.bin/mocha test --reporter=spec",
     "tdd": "MOCHA_FILE=test/mocha.xml node_modules/.bin/mocha test --reporter=min --watch"
   },
@@ -28,6 +29,7 @@
     "chai-xml": "^0.3.0",
     "eslint": "^7.0.0",
     "mocha": "^7.2.0",
+    "release-it": "13.6.6",
     "rimraf": "^3.0.2",
     "test-console": "^1.0.0",
     "xmllint": "^0.1.1"

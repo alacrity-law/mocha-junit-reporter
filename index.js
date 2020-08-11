@@ -227,16 +227,16 @@ function MochaJUnitReporter(runner, options) {
   }.bind(this));
 
   this._runner.on('pass', function(test) {
-    lastSuite().push(this.getTestcaseData(test));
+    lastSuite().push(this.getTestcaseData(test, testsuites[0].testsuite));
   }.bind(this));
 
   this._runner.on('fail', function(test, err) {
-    lastSuite().push(this.getTestcaseData(test, err));
+    lastSuite().push(this.getTestcaseData(test, testsuites[0].testsuite, err));
   }.bind(this));
 
   if (this._options.includePending) {
     this._runner.on('pending', function(test) {
-      var testcase = this.getTestcaseData(test);
+      var testcase = this.getTestcaseData(test, testsuites[0].testsuite);
 
       testcase.testcase.push({ skipped: null });
       lastSuite().push(testcase);
@@ -289,21 +289,28 @@ MochaJUnitReporter.prototype.getTestsuiteData = function(suite) {
 /**
  * Produces an xml config for a given test case.
  * @param {object} test - test case
+ * @param {object} suite - test suite
  * @param {object} err - if test failed, the failure object
  * @returns {object}
  */
-MochaJUnitReporter.prototype.getTestcaseData = function(test, err) {
+MochaJUnitReporter.prototype.getTestcaseData = function(test, suite, err) {
   var jenkinsMode = this._options.jenkinsMode;
   var flipClassAndName = this._options.testCaseSwitchClassnameAndName;
   var name = stripAnsi(jenkinsMode ? getJenkinsClassname(test, this._options) : test.fullTitle());
   var classname = stripAnsi(test.title);
+  var attributes = {
+    name: flipClassAndName ? classname : name,
+    time: (typeof test.duration === 'undefined') ? 0 : test.duration / 1000,
+    classname: flipClassAndName ? name : classname,
+  };
+
+  if (suite && suite._attr && suite._attr.file) {
+    attributes.file = suite._attr.file;
+  }
+
   var testcase = {
     testcase: [{
-      _attr: {
-        name: flipClassAndName ? classname : name,
-        time: (typeof test.duration === 'undefined') ? 0 : test.duration / 1000,
-        classname: flipClassAndName ? name : classname
-      }
+      _attr: attributes
     }]
   };
 
