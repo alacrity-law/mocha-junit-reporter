@@ -592,6 +592,18 @@ describe('mocha-junit-reporter', function() {
         done();
       });
     });
+
+    it('adds file to all testcases', function(done) {
+      var file = '/tmp/test-file.js';
+      var reporter = createReporter();
+      reporter.runner.suite.file = file;
+      reporter.runner.suite.addTest(createTest('test'));
+
+      runRunner(reporter.runner, function() {
+        expect(reporter._testsuites[0].testsuite[1].testcase[0]._attr.file).to.equal(file);
+        done();
+      });
+    });
   });
 
   describe('Feature "Configurable classname/name switch"', function() {

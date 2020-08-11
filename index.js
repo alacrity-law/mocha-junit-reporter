@@ -227,16 +227,16 @@ function MochaJUnitReporter(runner, options) {
   }.bind(this));
 
   this._runner.on('pass', function(test) {
-    lastSuite().push(this.getTestcaseData(test, testsuites[0].testsuite));
+    lastSuite().push(this.getTestcaseData(test));
   }.bind(this));
 
   this._runner.on('fail', function(test, err) {
-    lastSuite().push(this.getTestcaseData(test, testsuites[0].testsuite, err));
+    lastSuite().push(this.getTestcaseData(test, err));
   }.bind(this));
 
   if (this._options.includePending) {
     this._runner.on('pending', function(test) {
-      var testcase = this.getTestcaseData(test, testsuites[0].testsuite);
+      var testcase = this.getTestcaseData(test);
 
       testcase.testcase.push({ skipped: null });
       lastSuite().push(testcase);
@@ -289,11 +289,10 @@ MochaJUnitReporter.prototype.getTestsuiteData = function(suite) {
 /**
  * Produces an xml config for a given test case.
  * @param {object} test - test case
- * @param {object} suite - test suite
  * @param {object} err - if test failed, the failure object
  * @returns {object}
  */
-MochaJUnitReporter.prototype.getTestcaseData = function(test, suite, err) {
+MochaJUnitReporter.prototype.getTestcaseData = function(test, err) {
   var jenkinsMode = this._options.jenkinsMode;
   var flipClassAndName = this._options.testCaseSwitchClassnameAndName;
   var name = stripAnsi(jenkinsMode ? getJenkinsClassname(test, this._options) : test.fullTitle());
@@ -304,8 +303,8 @@ MochaJUnitReporter.prototype.getTestcaseData = function(test, suite, err) {
     classname: flipClassAndName ? name : classname,
   };
 
-  if (suite && suite._attr && suite._attr.file) {
-    attributes.file = suite._attr.file;
+  if (test.parent && test.parent.file) {
+    attributes.file = test.parent.file;
   }
 
   var testcase = {
