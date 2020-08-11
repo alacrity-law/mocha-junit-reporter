@@ -597,10 +597,11 @@ describe('mocha-junit-reporter', function() {
       var file = '/tmp/test-file.js';
       var reporter = createReporter();
       reporter.runner.suite.file = file;
-      reporter.runner.suite.addTest(createTest('test'));
+      var suite = Suite.create(reporter.runner.suite, 'nested suite');
+      suite.addTest(createTest('test'));
 
       runRunner(reporter.runner, function() {
-        expect(reporter._testsuites[0].testsuite[1].testcase[0]._attr.file).to.equal(file);
+        expect(reporter._testsuites[1].testsuite[1].testcase[0]._attr.file).to.equal(file);
         done();
       });
     });

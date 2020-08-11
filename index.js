@@ -303,8 +303,12 @@ MochaJUnitReporter.prototype.getTestcaseData = function(test, err) {
     classname: flipClassAndName ? name : classname,
   };
 
-  if (test.parent && test.parent.file) {
-    attributes.file = test.parent.file;
+  var parent = test;
+  while (!parent.root) {
+    parent = parent.parent;
+  }
+  if (parent.file) {
+    attributes.file = parent.file;
   }
 
   var testcase = {
